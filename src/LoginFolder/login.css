@@ -1,0 +1,50 @@
+
+.Big{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Logincontainer {
+  min-width: 350px;
+  height: 350px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  margin-bottom: 5px;
+  display: block; /* Dodajemo ovu liniju kako bi labeli bili u koloni */
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  width: 90%;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  height: 40px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 16px;
+  width: 100%;
+}
