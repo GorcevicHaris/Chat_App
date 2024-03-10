@@ -19,7 +19,7 @@ function HomePage() {
       }
     });
   }, []);
-
+  //
   function onLogout() {
     axios.get("http://localhost:8000/logout").then((response) => {
       if (response.data.Status === "Success") {
