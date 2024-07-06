@@ -14,7 +14,7 @@ function HomePage() {
   const [messages, setMessages] = useState([]);
   const [item, setItem] = useState([]);
   const navigate = useNavigate();
-  const username = "currentUsername"; // Promeni ovo u stvarni username korisnika
+  const username = "currentUsername";
 
   function joinRoom() {
     socket.emit("join_room", room);
@@ -28,13 +28,13 @@ function HomePage() {
       .post("http://localhost:8000/api/getMessage", newMessage)
       .then((response) => {
         console.log("Message saved:", response.data);
-        setMessages([...messages, newMessage]);
+        setMessages((prevData) => [...prevData, newMessage]);
       })
       .catch((error) => {
         console.error("greska", error);
       });
+    console.log(newMessage, "nova poruka");
   }
-
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/getMessages")
