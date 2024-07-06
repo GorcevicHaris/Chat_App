@@ -1,0 +1,15 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+}
+.container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+.chat{
+    width: 300px;
+    height: 450px;
+    background-color: red;
+}

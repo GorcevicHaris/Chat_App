@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./login.css";
-import Validation from "..//LoginValidation";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -15,22 +14,22 @@ function Login() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setError(Validation(values));
     axios
       .post("http://localhost:8000/login", values)
       .then((response) => {
         if (response.data.Status === "Success") {
           navigate("/");
         } else {
-          alert(response.data.Message);
         }
       })
       .catch((error) => {
         console.error("Greška prilikom prijave:", error);
       });
   }
+
   const auth = document.cookie;
 
+  console.log(document.cookie, "document");
   useEffect(() => {
     if (auth) {
       navigate("/");
@@ -64,7 +63,6 @@ function Login() {
               onChange={(e) =>
                 setValues({ ...values, password: e.target.value })
               }
-              type="password"
               placeholder="Enter your password"
               name="password"
             />
