@@ -11,26 +11,40 @@ function HomePage() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messageReceived, setMessageReceived] = useState("");
+  const [messages, setMessages] = useState([]);
   const [item, setItem] = useState([]);
   const navigate = useNavigate();
+  const username = "currentUsername"; // Promeni ovo u stvarni username korisnika
 
   function joinRoom() {
     socket.emit("join_room", room);
   }
 
   function sendMessage() {
+    const newMessage = { text: message, username: username };
     socket.emit("send_message", { room, message });
 
-    // Slanje poruke na backend da se sačuva u bazi
     axios
-      .post("http://localhost:8000/api/getMessage", { text: message })
+      .post("http://localhost:8000/api/getMessage", newMessage)
       .then((response) => {
         console.log("Message saved:", response.data);
+        setMessages([...messages, newMessage]);
       })
       .catch((error) => {
-        console.error("There was an error saving the message:", error);
+        console.error("greska", error);
       });
   }
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/getMessages")
+      .then((response) => {
+        setMessages(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching messages:", error);
+      });
+  }, []);
 
   useEffect(() => {
     socket.on("received_message", (data) => {
@@ -52,8 +66,8 @@ function HomePage() {
     <div className="container">
       home
       <div>
-        {item?.map((data) => (
-          <Homecomponent data={data} />
+        {item?.map((data, index) => (
+          <Homecomponent key={index} data={data} />
         ))}
       </div>
       <h1 onClick={() => navigate("/basket")}>idi do korpe</h1>
@@ -69,7 +83,23 @@ function HomePage() {
           placeholder="Message..."
         ></input>
         <button onClick={sendMessage}>Send Message</button>
-        <h2>Message : {messageReceived}</h2>
+        <p style={{ backgroundColor: "white" }}>{messageReceived}</p>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "3px" }}
+          className="message-list"
+        >
+          {messages.map((msg, index) => (
+            <p
+              key={index}
+              style={{
+                backgroundColor:
+                  msg.username === username ? "lightgreen" : "white",
+              }}
+            >
+              {msg.text}
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );
