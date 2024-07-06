@@ -3,21 +3,33 @@ import "./HomePage.css";
 import axios from "axios";
 import Homecomponent from "../components/Homecomponent";
 import { Context } from "../Context/ContextProvider";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 const socket = io.connect("http://localhost:8000");
+
 function HomePage() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messageReceived, setMessageReceived] = useState("");
   const [item, setItem] = useState([]);
   const navigate = useNavigate();
+
   function joinRoom() {
     socket.emit("join_room", room);
   }
 
   function sendMessage() {
     socket.emit("send_message", { room, message });
+
+    // Slanje poruke na backend da se sačuva u bazi
+    axios
+      .post("http://localhost:8000/api/getMessage", { text: message })
+      .then((response) => {
+        console.log("Message saved:", response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error saving the message:", error);
+      });
   }
 
   useEffect(() => {
@@ -25,7 +37,7 @@ function HomePage() {
       setMessageReceived(data.message);
       console.log(data);
     });
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     function getData() {
