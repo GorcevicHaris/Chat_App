@@ -13,15 +13,19 @@ function HomePage() {
   const [messageReceived, setMessageReceived] = useState("");
   const [messages, setMessages] = useState([]);
   const [item, setItem] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [userNames, setUserNames] = useState([]);
   const navigate = useNavigate();
   const username = "currentUsername";
+  const { userID, setUserID } = useContext(Context);
 
   function joinRoom() {
     socket.emit("join_room", room);
+    console.log(room, "duzina sobe");
   }
 
   function sendMessage() {
-    const newMessage = { text: message, username: username };
+    const newMessage = { text: message, username: username, userID: userID };
     socket.emit("send_message", { room, message });
 
     axios
@@ -45,14 +49,18 @@ function HomePage() {
         console.error("Error fetching messages:", error);
       });
   }, []);
-
+  console.log(userID, "ljaljan");
   useEffect(() => {
     socket.on("received_message", (data) => {
       setMessageReceived(data.message);
       console.log(data);
     });
+    socket.on("user_joined", (data) => {
+      console.log(data, "erhadpenda");
+      setUsers((prev) => [...prev, data]);
+    });
   }, []);
-
+  console.log(users, "haringa");
   useEffect(() => {
     function getData() {
       axios.get("http://localhost:8000/api/home").then((res) => {
@@ -60,17 +68,24 @@ function HomePage() {
       });
     }
     getData();
+    function getUsers() {
+      axios.get("http://localhost:8000/api/GetAllUsers").then((res) => {
+        console.log(res.data, "svi useri");
+        setUserNames(res.data);
+      });
+    }
+    getUsers();
   }, []);
 
   return (
     <div className="container">
       home
-      <div>
-        {item?.map((data, index) => (
-          <Homecomponent key={index} data={data} />
-        ))}
-      </div>
-      <h1 onClick={() => navigate("/basket")}>idi do korpe</h1>
+      {/* <div>
+          {item?.map((data, index) => (
+            <Homecomponent key={index} data={data} />
+          ))}
+        </div> */}
+      {/* <h1 onClick={() => navigate("/basket")}>idi do korpe</h1> */}
       <h1 onClick={() => navigate("/")}>go to profile</h1>
       <div className="chat">
         <input
@@ -100,8 +115,16 @@ function HomePage() {
             </p>
           ))}
         </div>
+        {userNames?.map((name) => (
+          <p style={{ backgroundColor: "purple" }}>friend :{name.name}</p>
+        ))}
       </div>
     </div>
+    // <div>
+    //   {users?.map((data) => (
+    //     <p>{data}</p>
+    //   ))}
+    // </div>
   );
 }
 
