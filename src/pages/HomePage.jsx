@@ -16,7 +16,7 @@ function HomePage() {
   const [users, setUsers] = useState([]);
   const [userNames, setUserNames] = useState([]);
   const navigate = useNavigate();
-  const username = "currentUsername";
+  const [username, setUsername] = useState("");
   const { userID, setUserID } = useContext(Context);
 
   function joinRoom() {
@@ -25,14 +25,14 @@ function HomePage() {
   }
 
   function sendMessage() {
-    const newMessage = { text: message, username: username, userID: userID };
-    socket.emit("send_message", { room, message });
+    const newMessage = { text: message, username: username };
+    socket.emit("send_message", { room, message, username });
 
     axios
       .post("http://localhost:8000/api/getMessage", newMessage)
       .then((response) => {
         console.log("Message saved:", response.data);
-        setMessages((prevData) => [...prevData, newMessage]);
+        // setMessages((prevData) => [...prevData, newMessage]);
       })
       .catch((error) => {
         console.error("greska", error);
@@ -48,11 +48,13 @@ function HomePage() {
       .catch((error) => {
         console.error("Error fetching messages:", error);
       });
+    setUsername(Math.random() * 10);
   }, []);
   console.log(userID, "ljaljan");
   useEffect(() => {
     socket.on("received_message", (data) => {
-      setMessageReceived(data.message);
+      const newMessage = { text: data.message, username: data.username };
+      setMessages((prevData) => [...prevData, newMessage]);
       console.log(data);
     });
     socket.on("user_joined", (data) => {
@@ -115,9 +117,9 @@ function HomePage() {
             </p>
           ))}
         </div>
-        {userNames?.map((name) => (
+        {/* {userNames?.map((name) => (
           <p style={{ backgroundColor: "purple" }}>friend :{name.name}</p>
-        ))}
+        ))} */}
       </div>
     </div>
     // <div>
