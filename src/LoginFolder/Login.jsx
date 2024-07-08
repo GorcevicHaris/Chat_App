@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Context } from "../Context/ContextProvider";
 
 function Login() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ function Login() {
     email: "",
     password: "",
   });
+  const { ime, setIme } = useContext(Context);
   const [errors, setError] = useState({});
   axios.defaults.withCredentials = true;
 
@@ -19,6 +21,8 @@ function Login() {
       .then((response) => {
         if (response.data.Status === "Success") {
           navigate("/");
+          console.log(response.data);
+          setIme(response.data.ime);
         } else {
         }
       })

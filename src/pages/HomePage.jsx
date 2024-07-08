@@ -17,15 +17,15 @@ function HomePage() {
   const [userNames, setUserNames] = useState([]);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
-  const { userID, setUserID } = useContext(Context);
+  const { userID, setUserID, ime, setIme } = useContext(Context);
 
   function joinRoom() {
     socket.emit("join_room", room);
     console.log(room, "duzina sobe");
   }
-
+  console.log(ime, "ime");
   function sendMessage() {
-    const newMessage = { text: message, username: username };
+    const newMessage = { text: message, username: ime };
     socket.emit("send_message", { room, message, username });
 
     axios
@@ -48,7 +48,6 @@ function HomePage() {
       .catch((error) => {
         console.error("Error fetching messages:", error);
       });
-    setUsername(Math.random() * 10);
   }, []);
   console.log(userID, "ljaljan");
   useEffect(() => {
@@ -102,7 +101,15 @@ function HomePage() {
         <button onClick={sendMessage}>Send Message</button>
         <p style={{ backgroundColor: "white" }}>{messageReceived}</p>
         <div
-          style={{ display: "flex", flexDirection: "column", gap: "3px" }}
+          style={{
+            display: "flex",
+            height: "100%",
+            width: "100%",
+            flexDirection: "column",
+            gap: "3px",
+            overflow: "auto",
+            backgroundColor: "blue",
+          }}
           className="message-list"
         >
           {messages.map((msg, index) => (
@@ -116,7 +123,9 @@ function HomePage() {
               {msg.text}
             </p>
           ))}
+          <h1>ime:{ime}</h1>
         </div>
+
         {/* {userNames?.map((name) => (
           <p style={{ backgroundColor: "purple" }}>friend :{name.name}</p>
         ))} */}

@@ -8,7 +8,7 @@ function Profile() {
   const [message, setMessage] = useState("");
   const [counter, setCounter] = useState();
   const navigate = useNavigate();
-  const { userID, setUserID } = useContext(Context);
+  const { userID, setUserID, ime, setIme } = useContext(Context);
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
