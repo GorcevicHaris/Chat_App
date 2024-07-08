@@ -21,8 +21,6 @@ function Login() {
       .then((response) => {
         if (response.data.Status === "Success") {
           navigate("/");
-          console.log(response.data);
-          setIme(response.data.ime);
         } else {
         }
       })

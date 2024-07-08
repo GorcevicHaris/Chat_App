@@ -16,17 +16,30 @@ function HomePage() {
   const [users, setUsers] = useState([]);
   const [userNames, setUserNames] = useState([]);
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const { userID, setUserID, ime, setIme } = useContext(Context);
-
+  const [ime, setIme] = useState("");
   function joinRoom() {
     socket.emit("join_room", room);
     console.log(room, "duzina sobe");
   }
-  console.log(ime, "ime");
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000", { withCredentials: true })
+      .then((response) => {
+        if (response.data.Status === "Success") {
+          setIme(response.data.name);
+        } else {
+          console.log("greska");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
   function sendMessage() {
     const newMessage = { text: message, username: ime };
-    socket.emit("send_message", { room, message, username });
+    socket.emit("send_message", { room, message, ime });
 
     axios
       .post("http://localhost:8000/api/getMessage", newMessage)
@@ -49,7 +62,6 @@ function HomePage() {
         console.error("Error fetching messages:", error);
       });
   }, []);
-  console.log(userID, "ljaljan");
   useEffect(() => {
     socket.on("received_message", (data) => {
       const newMessage = { text: data.message, username: data.username };
@@ -61,7 +73,7 @@ function HomePage() {
       setUsers((prev) => [...prev, data]);
     });
   }, []);
-  console.log(users, "haringa");
+
   useEffect(() => {
     function getData() {
       axios.get("http://localhost:8000/api/home").then((res) => {
@@ -77,7 +89,6 @@ function HomePage() {
     }
     getUsers();
   }, []);
-
   return (
     <div className="container">
       home
@@ -116,8 +127,7 @@ function HomePage() {
             <p
               key={index}
               style={{
-                backgroundColor:
-                  msg.username === username ? "lightgreen" : "white",
+                backgroundColor: msg.userName === ime ? "lightgreen" : "white",
               }}
             >
               {msg.text}

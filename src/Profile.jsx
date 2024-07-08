@@ -8,7 +8,7 @@ function Profile() {
   const [message, setMessage] = useState("");
   const [counter, setCounter] = useState();
   const navigate = useNavigate();
-  const { userID, setUserID, ime, setIme } = useContext(Context);
+  const { userID, setUserID } = useContext(Context);
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
@@ -16,7 +16,7 @@ function Profile() {
       .get("http://localhost:8000")
       .then((response) => {
         if (response.data.Status === "Success") {
-          console.log(response.data, "ASDSA");
+          console.log(response.data);
           setAuth(true);
           setName(response.data.name);
           setCounter(response.data.counter);
