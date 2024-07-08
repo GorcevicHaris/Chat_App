@@ -13,6 +13,7 @@ function HomePage() {
   const [userNames, setUserNames] = useState([]);
   const navigate = useNavigate();
   const [ime, setIme] = useState("");
+  const [vreme, setVreme] = useState("");
   function joinRoom() {
     socket.emit("join_room", room);
     console.log(room, "duzina sobe");
@@ -34,6 +35,7 @@ function HomePage() {
 
   function sendMessage() {
     const currentTime = new Date().toLocaleTimeString();
+    setVreme(currentTime);
     const newMessage = { text: message, userName: ime, time: currentTime };
     socket.emit("send_message", { room, message, ime, time: currentTime });
     axios
@@ -125,7 +127,7 @@ function HomePage() {
         >
           {messages &&
             messages.map((msg, index) => {
-              console.log(msg?.userName, ime, "msg", msg?.time, "vreme");
+              console.log(msg.time, "vreme");
               return (
                 <p
                   key={index}
