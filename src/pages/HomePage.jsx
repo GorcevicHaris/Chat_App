@@ -33,9 +33,9 @@ function HomePage() {
   }, []);
 
   function sendMessage() {
-    const newMessage = { text: message, userName: ime };
-    socket.emit("send_message", { room, message, ime });
-
+    const currentTime = new Date().toLocaleTimeString();
+    const newMessage = { text: message, userName: ime, time: currentTime };
+    socket.emit("send_message", { room, message, ime, time: currentTime });
     axios
       .post("http://localhost:8000/api/getMessage", newMessage)
       .then((response) => {
@@ -60,7 +60,11 @@ function HomePage() {
   useEffect(() => {
     socket.on("received_message", (data) => {
       console.log(data, "ajde");
-      const newMessage = { text: data.message, userName: data.ime };
+      const newMessage = {
+        text: data.message,
+        userName: data.ime,
+        time: data.time,
+      };
       setMessages((prevData) => [...prevData, newMessage]);
       console.log(messages, "hamza");
     });
@@ -121,7 +125,7 @@ function HomePage() {
         >
           {messages &&
             messages.map((msg, index) => {
-              console.log(msg?.userName, ime, "msg");
+              console.log(msg?.userName, ime, "msg", msg?.time, "vreme");
               return (
                 <p
                   key={index}
@@ -131,6 +135,7 @@ function HomePage() {
                   }}
                 >
                   {msg.text}
+                  {msg?.time}
                 </p>
               );
             })}
