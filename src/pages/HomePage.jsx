@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./HomePage.css";
 import axios from "axios";
-import Homecomponent from "../components/Homecomponent";
-import { Context } from "../Context/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 const socket = io.connect("http://localhost:8000");
@@ -10,10 +8,8 @@ const socket = io.connect("http://localhost:8000");
 function HomePage() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
-  const [messageReceived, setMessageReceived] = useState("");
   const [messages, setMessages] = useState([]);
   const [item, setItem] = useState([]);
-  const [users, setUsers] = useState([]);
   const [userNames, setUserNames] = useState([]);
   const navigate = useNavigate();
   const [ime, setIme] = useState("");
@@ -21,7 +17,6 @@ function HomePage() {
     socket.emit("join_room", room);
     console.log(room, "duzina sobe");
   }
-
   useEffect(() => {
     axios
       .get("http://localhost:8000", { withCredentials: true })
@@ -38,14 +33,13 @@ function HomePage() {
   }, []);
 
   function sendMessage() {
-    const newMessage = { text: message, username: ime };
+    const newMessage = { text: message, userName: ime };
     socket.emit("send_message", { room, message, ime });
 
     axios
       .post("http://localhost:8000/api/getMessage", newMessage)
       .then((response) => {
         console.log("Message saved:", response.data);
-        // setMessages((prevData) => [...prevData, newMessage]);
       })
       .catch((error) => {
         console.error("greska", error);
@@ -62,16 +56,18 @@ function HomePage() {
         console.error("Error fetching messages:", error);
       });
   }, []);
+
   useEffect(() => {
     socket.on("received_message", (data) => {
-      const newMessage = { text: data.message, username: data.username };
+      console.log(data, "ajde");
+      const newMessage = { text: data.message, userName: data.ime };
       setMessages((prevData) => [...prevData, newMessage]);
-      console.log(data);
+      console.log(messages, "hamza");
     });
-    socket.on("user_joined", (data) => {
-      console.log(data, "erhadpenda");
-      setUsers((prev) => [...prev, data]);
-    });
+    // socket.on("user_joined", (data) => {
+    //   console.log(data, "erhadpenda");
+    //   setUsers((prev) => [...prev, data]);
+    // });
   }, []);
 
   useEffect(() => {
@@ -89,6 +85,7 @@ function HomePage() {
     }
     getUsers();
   }, []);
+  console.log(messages, "poruke");
   return (
     <div className="container">
       home
@@ -110,7 +107,6 @@ function HomePage() {
           placeholder="Message..."
         ></input>
         <button onClick={sendMessage}>Send Message</button>
-        <p style={{ backgroundColor: "white" }}>{messageReceived}</p>
         <div
           style={{
             display: "flex",
@@ -123,29 +119,25 @@ function HomePage() {
           }}
           className="message-list"
         >
-          {messages.map((msg, index) => (
-            <p
-              key={index}
-              style={{
-                backgroundColor: msg.userName === ime ? "lightgreen" : "white",
-              }}
-            >
-              {msg.text}
-            </p>
-          ))}
+          {messages &&
+            messages.map((msg, index) => {
+              console.log(msg?.userName, ime, "msg");
+              return (
+                <p
+                  key={index}
+                  style={{
+                    backgroundColor:
+                      msg?.userName === ime ? "lightgreen" : "white",
+                  }}
+                >
+                  {msg.text}
+                </p>
+              );
+            })}
           <h1>ime:{ime}</h1>
         </div>
-
-        {/* {userNames?.map((name) => (
-          <p style={{ backgroundColor: "purple" }}>friend :{name.name}</p>
-        ))} */}
       </div>
     </div>
-    // <div>
-    //   {users?.map((data) => (
-    //     <p>{data}</p>
-    //   ))}
-    // </div>
   );
 }
 
