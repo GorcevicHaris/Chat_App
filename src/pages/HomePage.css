@@ -7,9 +7,25 @@
     width: 100vw;
     height: 100vh;
     display: flex;
+    position: relative;
 }
 .chat{
     width: 300px;
     height: 450px;
     background-color: red;
+}
+.krug{
+    border-radius: 50%;
+    height: 200px;
+    width: 200px;
+    background-color: aqua;
+}
+
+.krug2{
+    border-radius: 50%;
+    height: 150px;
+    width: 150px;
+    background-color: red;
+    position: absolute;
+    left: 500px;
 }

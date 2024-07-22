@@ -9,15 +9,20 @@ function HomePage() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [item, setItem] = useState([]);
   const [userNames, setUserNames] = useState([]);
-  const navigate = useNavigate();
   const [ime, setIme] = useState("");
   const [vreme, setVreme] = useState("");
+  const [isBlue, setIsBlue] = useState(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position2, setPosition2] = useState({ top: 0, left: 0 });
+
+  const navigate = useNavigate();
+
   function joinRoom() {
     socket.emit("join_room", room);
     console.log(room, "duzina sobe");
   }
+
   useEffect(() => {
     axios
       .get("http://localhost:8000", { withCredentials: true })
@@ -35,9 +40,15 @@ function HomePage() {
 
   function sendMessage() {
     const currentTime = new Date().toLocaleTimeString();
-    setVreme(currentTime);
     const newMessage = { text: message, userName: ime, time: currentTime };
-    socket.emit("send_message", { room, message, ime, time: currentTime });
+
+    socket.emit("send_message", {
+      room,
+      message,
+      ime,
+      time: currentTime,
+    });
+
     axios
       .post("http://localhost:8000/api/getMessage", newMessage)
       .then((response) => {
@@ -46,8 +57,8 @@ function HomePage() {
       .catch((error) => {
         console.error("greska", error);
       });
-    console.log(newMessage, "nova poruka");
   }
+
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/getMessages")
@@ -61,47 +72,93 @@ function HomePage() {
 
   useEffect(() => {
     socket.on("received_message", (data) => {
-      console.log(data, "ajde");
       const newMessage = {
         text: data.message,
         userName: data.ime,
         time: data.time,
       };
       setMessages((prevData) => [...prevData, newMessage]);
-      console.log(messages, "hamza");
     });
-    // socket.on("user_joined", (data) => {
-    //   console.log(data, "erhadpenda");
-    //   setUsers((prev) => [...prev, data]);
-    // });
+
+    socket.on("assigned_circle", (data) => {
+      console.log(data, "dara");
+      setIsBlue(data.isBlue);
+    });
+
+    socket.on("update_circle", (data) => {
+      if (data.isBlue) {
+        setPosition({ top: data.top, left: data.left });
+      } else {
+        setPosition2({ top: data.top, left: data.left });
+      }
+    });
   }, []);
 
   useEffect(() => {
     function getData() {
       axios.get("http://localhost:8000/api/home").then((res) => {
-        setItem(res.data);
-      });
-    }
-    getData();
-    function getUsers() {
-      axios.get("http://localhost:8000/api/GetAllUsers").then((res) => {
-        console.log(res.data, "svi useri");
         setUserNames(res.data);
       });
     }
-    getUsers();
+    getData();
   }, []);
-  console.log(messages, "poruke");
+
+  function onArrows(e) {
+    if (isBlue !== null) {
+      if (isBlue) {
+        if (e.key === "ArrowDown") position.top += 10;
+        else if (e.key === "ArrowUp") position.top -= 10;
+        else if (e.key === "ArrowLeft") position.left -= 10;
+        else if (e.key === "ArrowRight") position.left += 10;
+        setPosition(position);
+
+        socket.emit("move_circle", {
+          top: position.top,
+          left: position.left,
+          isBlue,
+        });
+      } else {
+        if (e.key === "ArrowDown") position2.top += 10;
+        else if (e.key === "ArrowUp") position2.top -= 10;
+        else if (e.key === "ArrowLeft") position2.left -= 10;
+        else if (e.key === "ArrowRight") position2.left += 10;
+
+        setPosition2(position2);
+
+        socket.emit("move_circle", {
+          top: position2.top,
+          left: position2.left,
+          isBlue,
+        });
+      }
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("keydown", onArrows);
+    return () => {
+      window.removeEventListener("keydown", onArrows);
+    };
+  }, [position, position2, isBlue]);
+
   return (
     <div className="container">
-      home
-      {/* <div>
-          {item?.map((data, index) => (
-            <Homecomponent key={index} data={data} />
-          ))}
-        </div> */}
-      {/* <h1 onClick={() => navigate("/basket")}>idi do korpe</h1> */}
-      <h1 onClick={() => navigate("/")}>go to profile</h1>
+      <div
+        style={{
+          position: "absolute",
+          top: `${position.top}px`,
+          left: `${position.left}px`,
+        }}
+        className="krug"
+      ></div>
+      <div
+        style={{
+          position: "absolute",
+          top: `${position2.top}px`,
+          left: `${position2.left}px`,
+        }}
+        className="krug2"
+      ></div>
       <div className="chat">
         <input
           onChange={(e) => setRoom(e.target.value)}
@@ -113,34 +170,17 @@ function HomePage() {
           placeholder="Message..."
         ></input>
         <button onClick={sendMessage}>Send Message</button>
-        <div
-          style={{
-            display: "flex",
-            height: "100%",
-            width: "100%",
-            flexDirection: "column",
-            gap: "3px",
-            overflow: "auto",
-            backgroundColor: "blue",
-          }}
-          className="message-list"
-        >
-          {messages &&
-            messages.map((msg, index) => {
-              console.log(msg.time, "vreme");
-              return (
-                <p
-                  key={index}
-                  style={{
-                    backgroundColor:
-                      msg?.userName === ime ? "lightgreen" : "white",
-                  }}
-                >
-                  {msg.text}
-                  {msg?.time}
-                </p>
-              );
-            })}
+        <div className="message-list">
+          {messages.map((msg, index) => (
+            <p
+              key={index}
+              style={{
+                backgroundColor: msg.userName === ime ? "lightgreen" : "white",
+              }}
+            >
+              {msg.text} {msg.time}
+            </p>
+          ))}
           <h1>ime:{ime}</h1>
         </div>
       </div>
