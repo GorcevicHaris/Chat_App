@@ -13,7 +13,7 @@ function Profile() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000")
+      .get("http://192.168.0.102:8000")
       .then((response) => {
         if (response.data.Status === "Success") {
           console.log(response.data);
@@ -31,7 +31,7 @@ function Profile() {
   }, []);
   function onLogout() {
     axios
-      .get("http://localhost:8000/logout")
+      .get("http://192.168.0.102:8000/logout")
       .then((response) => {
         if (response.data.Status === "Success") {
           window.location.reload();
@@ -48,7 +48,7 @@ function Profile() {
     const newCounter = counter + 1;
     setCounter(newCounter);
     axios
-      .post("http://localhost:8000/api/update_counter", {
+      .post("http://192.168.0.102:8000/api/update_counter", {
         counter: newCounter,
         userID: userID,
       })

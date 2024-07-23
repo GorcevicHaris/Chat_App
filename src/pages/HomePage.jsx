@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./HomePage.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:8000");
+import { Context } from "../Context/ContextProvider";
+const socket = io.connect("http://192.168.0.102:8000");
+window.socket = socket;
 
 function HomePage() {
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState(0);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [userNames, setUserNames] = useState([]);
@@ -15,17 +17,31 @@ function HomePage() {
   const [isBlue, setIsBlue] = useState(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [position2, setPosition2] = useState({ top: 0, left: 0 });
+  const { userID, setUserID } = useContext(Context);
 
   const navigate = useNavigate();
+  axios.defaults.withCredentials = true;
 
   function joinRoom() {
+    axios
+      .post("http://192.168.0.102:8000/api/get/room", {
+        userID: userID,
+        room: room,
+      })
+      .then((response) => {
+        console.log(response.data, "podaci");
+      })
+      .catch((error) => {
+        console.error("There was an error inserting the room!", error);
+      });
+
     socket.emit("join_room", room);
     console.log(room, "duzina sobe");
   }
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000", { withCredentials: true })
+      .get("http://192.168.0.102:8000", { withCredentials: true })
       .then((response) => {
         if (response.data.Status === "Success") {
           setIme(response.data.name);
@@ -50,7 +66,7 @@ function HomePage() {
     });
 
     axios
-      .post("http://localhost:8000/api/getMessage", newMessage)
+      .post("http://192.168.0.102:8000/api/getMessage", newMessage)
       .then((response) => {
         console.log("Message saved:", response.data);
       })
@@ -61,7 +77,7 @@ function HomePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/getMessages")
+      .get("http://192.168.0.102:8000/api/getMessages")
       .then((response) => {
         setMessages(response.data);
       })
@@ -96,7 +112,7 @@ function HomePage() {
 
   useEffect(() => {
     function getData() {
-      axios.get("http://localhost:8000/api/home").then((res) => {
+      axios.get("http://192.168.0.102:8000/api/home").then((res) => {
         setUserNames(res.data);
       });
     }
@@ -148,6 +164,7 @@ function HomePage() {
           position: "absolute",
           top: `${position.top}px`,
           left: `${position.left}px`,
+          right: "1000px",
         }}
         className="krug"
       ></div>
@@ -156,6 +173,7 @@ function HomePage() {
           position: "absolute",
           top: `${position2.top}px`,
           left: `${position2.left}px`,
+          right: "1000px",
         }}
         className="krug2"
       ></div>

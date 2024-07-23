@@ -12,7 +12,7 @@ function Basket() {
   }, []);
   async function fetchData() {
     axios
-      .get("http://localhost:8000/api/fetchData", { withCredentials: true })
+      .get("http://192.168.0.102:8000/api/fetchData", { withCredentials: true })
       .then((res) => setProduct(res?.data))
       .catch((err) => console.log(err));
   }

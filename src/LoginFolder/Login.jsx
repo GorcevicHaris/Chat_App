@@ -17,7 +17,7 @@ function Login() {
   function handleSubmit(e) {
     e.preventDefault();
     axios
-      .post("http://localhost:8000/login", values)
+      .post("http://192.168.0.102:8000/login", values)
       .then((response) => {
         if (response.data.Status === "Success") {
           navigate("/");

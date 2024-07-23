@@ -19,13 +19,13 @@
     height: 200px;
     width: 200px;
     background-color: aqua;
+
 }
 
 .krug2{
     border-radius: 50%;
-    height: 150px;
-    width: 150px;
+    height: 200px;
+    width: 200px;
     background-color: red;
     position: absolute;
-    left: 500px;
 }

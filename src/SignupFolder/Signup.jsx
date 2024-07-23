@@ -17,7 +17,7 @@ function Signup() {
     event.preventDefault();
     setErrors(Validation(values));
     axios
-      .post("http://localhost:8000/register", values)
+      .post("http://192.168.0.102:8000/register", values)
       .then((res) => {
         navigate("/login");
         console.log(res);
