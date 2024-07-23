@@ -24,7 +24,7 @@ function HomePage() {
 
   function joinRoom() {
     axios
-      .post("http://192.168.0.102:8000/api/get/room", {
+      .post("http://192.168.0.102:8000/api/send/room", {
         userID: userID,
         room: room,
       })
