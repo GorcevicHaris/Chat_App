@@ -10,7 +10,6 @@ function Login() {
     email: "",
     password: "",
   });
-  const { ime, setIme } = useContext(Context);
   const [errors, setError] = useState({});
   axios.defaults.withCredentials = true;
 
