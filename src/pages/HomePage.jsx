@@ -3,7 +3,8 @@ import "./HomePage.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-import { Context } from "../Context/ContextProvider";
+import { v4 as uuidv4 } from "uuid";
+
 const socket = io.connect("http://192.168.0.102:8000");
 window.socket = socket;
 
@@ -19,10 +20,11 @@ function HomePage() {
   const [position2, setPosition2] = useState({ top: 0, left: 0 });
   const [checkRoom, setCheckRoom] = useState(0);
   const [userID, setUserID] = useState(null);
-
+  const [browserId, setBrowserId] = useState(null);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
+  console.log(browserId, "browserid");
   useEffect(() => {
     axios
       .get("http://192.168.0.102:8000", { withCredentials: true })
@@ -96,6 +98,10 @@ function HomePage() {
         console.error("greska", error);
       });
   }
+
+  useEffect(() => {
+    console.log(uuidv4(), "specific id");
+  }, []);
 
   useEffect(() => {
     axios

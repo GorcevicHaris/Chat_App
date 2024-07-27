@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Context } from "../Context/ContextProvider";
 
 function Login() {
   const navigate = useNavigate();

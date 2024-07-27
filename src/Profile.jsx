@@ -9,6 +9,7 @@ function Profile() {
   const [counter, setCounter] = useState();
   const navigate = useNavigate();
   const { userID, setUserID } = useContext(Context);
+  const [idOfUser, setIdOfUser] = useState(null);
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
@@ -21,6 +22,7 @@ function Profile() {
           setName(response.data.name);
           setCounter(response.data.counter);
           setUserID(response.data.userID);
+          setIdOfUser(response.data.userID);
         } else {
           setAuth(false);
         }
@@ -29,9 +31,10 @@ function Profile() {
         console.error("Error fetching data:", error);
       });
   }, []);
+  console.log(idOfUser, "aksuhdkajsdh");
   function onLogout() {
     axios
-      .get("http://192.168.0.102:8000/logout")
+      .get(`http://192.168.0.102:8000/api/Logout/${idOfUser}`)
       .then((response) => {
         if (response.data.Status === "Success") {
           window.location.reload();
