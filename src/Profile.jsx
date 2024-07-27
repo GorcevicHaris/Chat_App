@@ -31,7 +31,7 @@ function Profile() {
         console.error("Error fetching data:", error);
       });
   }, []);
-  console.log(idOfUser, "aksuhdkajsdh");
+
   function onLogout() {
     axios
       .get(`http://192.168.0.102:8000/api/Logout/${idOfUser}`)
