@@ -16,8 +16,12 @@ function HomePage() {
   const [ime, setIme] = useState("");
   const [vreme, setVreme] = useState("");
   const [isBlue, setIsBlue] = useState(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [position2, setPosition2] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState({ top: 100, left: 0 });
+  const [position2, setPosition2] = useState({
+    top: 100,
+    left: window.innerWidth - 100,
+  });
+
   const [checkRoom, setCheckRoom] = useState(0);
   const [userID, setUserID] = useState(null);
   const [browserId, setBrowserId] = useState(null);
@@ -43,40 +47,15 @@ function HomePage() {
       });
   }, []);
 
-  function joinRoom() {
-    // axios
-    //   .post("http://192.168.0.102:8000/api/send/room", {
-    //     userID: userID,
-    //     room: room,
-    //   })
-    //   .then((response) => {
-    //     console.log(response.data, "podaci");
-    //   })
-    //   .catch((error) => {
-    //     console.error("There was an error inserting the room!", error);
-    //   });
+  useEffect(() => {
+    // Postavi početne pozicije krugova
+    setPosition({ top: 100, left: 0 }); // Primer: skroz levo
+    setPosition2({ top: 100, left: window.innerWidth - 200 }); // Primer: skroz desno
+  }, []);
 
+  function joinRoom() {
     socket.emit("join_room", room);
-    console.log(room, "duzina sobe");
   }
-  console.log(userID, "id od usera");
-  // useEffect(() => {
-  //   function getData() {
-  //     axios
-  //       .get("http://192.168.0.102:8000/api/get/room", {
-  //         params: { userID: userID },
-  //       })
-  //       .then((res) => {
-  //         if (res.data?.room !== undefined) {
-  //           setRoom(res.data.room);
-  //         } else {
-  //           setRoom(res.data.room);
-  //         }
-  //         console.log(res.data?.room);
-  //       });
-  //   }
-  //   getData();
-  // }, [userID]);
 
   function sendMessage() {
     const currentTime = new Date().toLocaleTimeString();
@@ -192,7 +171,6 @@ function HomePage() {
           position: "absolute",
           top: `${position.top}px`,
           left: `${position.left}px`,
-          right: "1000px",
         }}
         className="krug"
       ></div>
@@ -201,14 +179,12 @@ function HomePage() {
           position: "absolute",
           top: `${position2.top}px`,
           left: `${position2.left}px`,
-          right: "1000px",
         }}
         className="krug2"
       ></div>
       <div className="chat">
         <input
           type="text"
-          // value={room}
           onChange={(e) => setRoom(e.target.value)}
           placeholder="Join Room"
         ></input>
